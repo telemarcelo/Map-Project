@@ -1,4 +1,4 @@
-
+//these are the location objects with their attributes
 var Map = function(){
   this.locations = ko.observableArray([
     {Title: 'Angled Tower', 
@@ -79,7 +79,7 @@ var ViewModel = function(){
       id:1
     });
     location.largeInfoWindow = new google.maps.InfoWindow();
-
+    //used to populate both types of info windows: temporary and permanent
     location.populateInfoWindow = function(mode){   
       var infoWindow = new google.maps.InfoWindow();
       if(mode==true){
@@ -99,15 +99,14 @@ var ViewModel = function(){
       if(mode!=true){setTimeout(function(){infoWindow.close()}, 1400)};
   }
     
-
+    //populates a permanent info window once a marker is clicked
     marker.addListener('click', function(){
       location.populateInfoWindow(true);
       this.setAnimation(google.maps.Animation.BOUNCE);
       setTimeout(function(){marker.setAnimation(google.maps.Animation.NULL)}, 1400);
     });
-   
+    
     location.highlight = function(){
-      //this.populateInfoWindow();
       marker.setIcon(makeMarkerIcon("FFFF24"));
     }
 
@@ -116,6 +115,7 @@ var ViewModel = function(){
       this.largeInfoWindow.close();
     }
 
+    //populates a permanent info window
     location.aniInfo = function(){
       location.populateInfoWindow(true);
       marker.setAnimation(google.maps.Animation.BOUNCE);
@@ -125,7 +125,6 @@ var ViewModel = function(){
     // connect events to marker listeners
     marker.addListener('mouseover', function() {
       location.populateInfoWindow();
-      //populateInfoWindow(location,marker);
       location.highlight();
     });
 
@@ -140,7 +139,16 @@ var ViewModel = function(){
     location.marker = marker;
 
   });
-  
+  //sets up functionality for hamburger button
+  $( ".hamburger" ).click(function() {
+    if(document.getElementById("map").style.left == "100%"){
+        document.getElementById("map").style.left = "0%";
+      }
+      else{
+        document.getElementById("map").style.left = "100%";
+      }
+  });
+
   //filter the items using the filter text
   this.Filter = ko.observable("");
   this.FilteredItems = ko.computed(function() {
@@ -153,6 +161,8 @@ var ViewModel = function(){
         }); 
     }
   }, this);
+
+
   console.log(FilteredItems());
   initMap();
 }
@@ -181,8 +191,8 @@ function initMap() {
   showMarkers(true);
 }
 
+//shows all markers
 function showMarkers(refit){
-  //hideMarkers();
   var bounds = new google.maps.LatLngBounds();
   FilteredItems().forEach(function(item){
     item.marker.setMap(map);
@@ -192,18 +202,14 @@ function showMarkers(refit){
   if(refit==true){map.fitBounds(bounds);}
 }
 
+//hides all markers
 function hideMarkers(){
    CurrentMap().locations().forEach(function(item){
     item.marker.setMap(null);
   });
 }
 
-function hideMarkers(){
-   CurrentMap().locations().forEach(function(item){
-    item.marker.setMap(null);
-  });
-}
-
+//makes icons of certain specifications
 function makeMarkerIcon(markerColor) {
 var markerImage = new google.maps.MarkerImage(
       'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
@@ -214,3 +220,4 @@ var markerImage = new google.maps.MarkerImage(
     new google.maps.Size(21,34));
   return markerImage;
 }
+

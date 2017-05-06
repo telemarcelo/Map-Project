@@ -3,20 +3,21 @@
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta charset="UTF-8">
-	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<link rel="stylesheet" type="text/css" href="css/style.css" async>
 	<script src="js/lib/jquery.min.js"></script>
-	<script src="js/lib/knockout-3.2.0.js" async></script>
-	<script src="js/main.js" async></script>
+	<script src="js/lib/knockout-3.2.0.js"></script>
+	<script src="js/main.js"></script>
 <body>
 	<!--div data-bind="with:viewModel.CurrentMap" class="options-box"-->
   	<div class="menu">
 		<div class="options-box">
 	  	<button class="hamburger">&#9776;</button>
 			<span class='t1'>Angkor Wat:</span>
-			<div> 
+			<div>
 				<input data-bind="textInput: Filter" onkeyup="showMarkers()" autocomplete="off" autofocus="autofocus">
 				<!--input type="text" data-bind="textInput: filter()"-->
 			</div>
+			<div class="error"></div>	
 			<div>
 				<ul data-bind="foreach: FilteredItems()">
 					<li data-bind="text: Title, event: {mouseover : highlight, mouseout: dehighlight, click: aniInfo}"></li>
@@ -25,17 +26,6 @@
 		</div>
 	</div>
 	<div id="map"></div>
-	<script>
-    	//$( ".menu" ).show();
-    	$( ".hamburger" ).click(function() {
-    		if(document.getElementById("map").style.left == "100%"){
-      			document.getElementById("map").style.left = "0%";
-      		}
-      		else{
-      			document.getElementById("map").style.left = "100%";
-      		}	
-    	});
-  	</script>	
 	<script async defer
 		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDagSvfXfHMQrVNXfSoXzc9wsScB89aqGs&v=3&callback=startApp">
 	</script>
