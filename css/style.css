@@ -1,0 +1,87 @@
+html,
+body {
+  font-family: Arial, sans-serif;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #fff;
+}
+.container {
+  height: 100%;
+  position: relative;
+}*/
+input {
+  font-size: 12px;
+}
+.t1 {
+  color: #fff;
+  font-size: 26px;
+}
+
+#map {
+  bottom:0px;
+  height: 100%;
+  left: 362px;
+  position: absolute;
+  right: 0px;
+}
+
+
+.options-box {
+  background-color: #a3ccff;
+  background-image: url("../img/tombRaider.jpg");
+  border: 1px solid #999;
+  border-radius: 3px;
+  height: 620px; 
+  line-height: 35px;
+  padding: 10px 10px 30px 10px;
+  text-align: left;
+  width: 340px;
+}
+
+li{
+  color: #fff;
+  font-size: 20px;
+}
+
+input{
+  font-size: 20px;
+}
+
+.hamburger{
+  display:none;
+}
+
+@media screen and (max-width:1000px) {
+  #map {
+    left:0px;
+  }
+  .hamburger{
+      display: inline;
+      background:none;
+      position:relative;
+      top:0;
+      right:0;
+      line-height:35px;
+      padding:5px 15px 0px 15px;
+      color:#999;
+      border:0;
+      font-size:1.4em;
+      font-weight:bold;
+      cursor:pointer;
+      outline:none;
+      z-index:10000000000000;
+    }
+  .menu {
+    width:100%;
+  }
+}
+
+@media screen and (min-width:1001px) {
+  #map {
+    left: 362px;
+  }
+  .menu {
+    width:100%;
+  }
+}
