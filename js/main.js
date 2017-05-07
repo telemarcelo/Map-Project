@@ -254,7 +254,7 @@ function getImgs(setId) {
     });  
   })
   .fail(function() {
-    console.log( "error! error!" );
+    alert( "Flickr Images Did NOT LOAD" );
   })
 }
 
