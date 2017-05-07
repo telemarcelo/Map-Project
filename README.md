@@ -13,11 +13,19 @@ Hover over the names of landmarks and see them highlighted.
 
 Hover over the markers and see them highlighted with title.
 
-Click on a marker or a list item to get an information window with a photograph of the area.  Click on wiki to learn more about the location from the wikipedia.  Click on album to see a collection of photographs from flickr.
-
+Click on a marker or a list item to get an information window with a flickr photograph of the area.  
 You can use the search box to narrow the titles and markers on the map.
 
 Use the hamburger menu to switch from location list to map (on a smaller screen).
 
 ##Error Handling
-Data requests are either handled asynchronously or through separate tabs so that error is handled by either a "file not found" message or a "pictures did not load" tab alert.  
+
+An alert notifies the user if Google Maps does not load
+An "Image Not Found" is displayed in the info box in case flickr data is unavailable.
+
+#Other
+
+I simplified the design to only use flickr and not wikipedia since the boxes are too small to read
+an article.
+
+I made the entire app one page and index uses the MVC Knockout pattern.

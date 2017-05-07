@@ -1,5 +1,10 @@
-//these are the location objects with their attributes
+var warnMap = function(){alert("The MAP could not LOAD :(");}
+
+
+getImgs("72157682966060796");
 var Map = function(){
+  //getImgs("72157682966060796");
+  this.flickrAlbum = ko.observable(72157682966060796)
   this.locations = ko.observableArray([
     {Title: 'Angled Tower', 
     position: {lat: 13.412805, lng: 103.866947},
@@ -66,6 +71,15 @@ var Map = function(){
 var ViewModel = function(){
   //uses model data to creat a ko.observable
   this.CurrentMap = ko.observable(new Map());
+  //creates an observable version of showMarkers
+  this.showMarkersObs = ko.observable(function(){showMarkers(false)});
+  //creates one instance of infoWindow that can be used repeatedly for all markers
+  infoWindow = new google.maps.InfoWindow();
+  var redMarker = makeMarkerIcon("FF4400"); //makes red marker
+  var highMarker = makeMarkerIcon("FFFF24"); //makes highlighted marker
+
+  
+  console.log(imageURLs);
   
   //creates all the markers as part of the View Model and adds event listeners and creates 
   //some extra marker methods
@@ -74,63 +88,37 @@ var ViewModel = function(){
       position: location.position,
       title: location.Title,
       animation: google.maps.Animation.DROP,
-      icon: makeMarkerIcon("FF4400"),
+      icon: redMarker,
       //color:'#ff0000',
       id:1
     });
-    location.largeInfoWindow = new google.maps.InfoWindow();
-    //used to populate both types of info windows: temporary and permanent
-    location.populateInfoWindow = function(mode){   
-      var infoWindow = new google.maps.InfoWindow();
-      if(mode==true){
-      var wiki = 'https://en.wikipedia.org/wiki/'+ location.wiki;
-      var flickr = 'views/Gallery/flickr.html';
-      infoWindow.setContent(
-        '<h2>'+location.Title+'</h2>'+
-        '<div><b><a href='+ flickr+' target=_blank>ALBUM:</a></b></div>'+
-        '<div><img src=img/' + location.img + '.jpg>' +
-        '<div><b><a href='+wiki+' target="_blank">WIKI:</a>,</b><div>');
-      if(document.getElementById("map").style.left == "100%"){$(".hamburger").click();}
-    }
-      else{infoWindow.setContent(location.Title);}
-      infoWindow.marker = marker;
-      // Make sure the marker property is cleared if the infowindow is closed.
-      infoWindow.open(map, marker);
-      if(mode!=true){setTimeout(function(){infoWindow.close()}, 1400)};
-  }
-    
-    //populates a permanent info window once a marker is clicked
-    marker.addListener('click', function(){
-      location.populateInfoWindow(true);
-      this.setAnimation(google.maps.Animation.BOUNCE);
-      setTimeout(function(){marker.setAnimation(google.maps.Animation.NULL)}, 1400);
-    });
-    
-    location.highlight = function(){
-      marker.setIcon(makeMarkerIcon("FFFF24"));
-    }
-
-    location.dehighlight = function(){
-      marker.setIcon(makeMarkerIcon("FF4400"));
-      this.largeInfoWindow.close();
-    }
-
-    //populates a permanent info window
+    //marker.imageURL = imageURLs[location.img-1];
+    //console.log(imageURLs);
+    //console.log(imgURLs[1]);
+    //used to populate the infoWindow once a list item is clicked
     location.aniInfo = function(){
-      location.populateInfoWindow(true);
+      populateInfoWindow(marker, infoWindow, location.img-1, location.Title);
       marker.setAnimation(google.maps.Animation.BOUNCE);
       setTimeout(function(){marker.setAnimation(google.maps.Animation.NULL)}, 1400);
     }
 
-    // connect events to marker listeners
-    marker.addListener('mouseover', function() {
-      location.populateInfoWindow();
-      location.highlight();
-    });
+    //populates the infoWindow once a marker is clicked
+    marker.addListener('click', function(){
+      location.aniInfo();
 
-    marker.addListener('mouseout', function() {
-      location.dehighlight();
+     // populateInfoWindow(marker, infoWindow);
+     // this.setAnimation(google.maps.Animation.BOUNCE);
+      //setTimeout(function(){marker.setAnimation(google.maps.Animation.NULL)}, 1400);
     });
+    
+    location.highlight = function(){
+      marker.setIcon(highMarker);
+    }
+
+    location.dehighlight = function(){
+      marker.setIcon(redMarker);
+    }
+
 
     marker.addListener('onclick'),  function(){
       location.aniInfo();
@@ -150,21 +138,45 @@ var ViewModel = function(){
   });
 
   //filter the items using the filter text
-  this.Filter = ko.observable("");
-  this.FilteredItems = ko.computed(function() {
+  this.filter = ko.observable("");
+  this.filteredItems = ko.computed(function() {
     hideMarkers();
     //var filter = this.filter().toLowerCase();
-    if (!this.Filter()) { return this.CurrentMap().locations();} 
+    if (!this.filter()) { return this.CurrentMap().locations();} 
     else {
         return ko.utils.arrayFilter(this.CurrentMap().locations(), function(item) {
-            if(item.Title.toLowerCase().match(this.Filter().toLowerCase())){return item}
+            if(item.Title.toLowerCase().match(this.filter().toLowerCase())){return item}
         }); 
     }
   }, this);
 
 
-  console.log(FilteredItems());
+  //console.log(FilteredItems());
   initMap();
+}
+
+function populateInfoWindow(marker, infowindow, imgNumber, title) {
+  //console.log(marker, infowindow, imgNumber, title, imageURLs);
+        // Check to make sure the infowindow is not already opened on this marker.
+  if (infowindow.marker != marker) {
+    // Clear the infowindow content to give the streetview time to load.
+    //var sag = 'http://maps.googleapis.com/maps/api/streetview?location=41.40404,2.17513&size=70x70&heading=220&fov=70&pitch=40';
+        //var sag = 'https://en.wikipedia.org/wiki/Angkor_Wat'
+    //infowindow.setContent('<IMG BORDER="0" ALIGN="Left" SRC='+sag+'>');
+        //infowindow.setContent('<a href='+sag+' target="_blank">Angkor Wat</a>');
+    if(imageURLs[imgNumber]==null){imageURLs[imgNumber]="Image Not Found! Try Again Later.";}
+
+    infowindow.setContent('<h2>'+title+'</h2>' + imageURLs[imgNumber]);
+    //console.log(marker);
+    infowindow.marker = marker;
+    // Make sure the marker property is cleared if the infowindow is closed.
+    infowindow.addListener('closeclick', function() {
+      infowindow.marker = null;
+    });
+    
+    // Open the infowindow on the correct marker.
+    infowindow.open(map, marker);
+  }
 }
 
 function startApp(){
@@ -194,9 +206,8 @@ function initMap() {
 //shows all markers
 function showMarkers(refit){
   var bounds = new google.maps.LatLngBounds();
-  FilteredItems().forEach(function(item){
+  filteredItems().forEach(function(item){
     item.marker.setMap(map);
-    console.log("count");
     bounds.extend(item.marker.position);
   });
   if(refit==true){map.fitBounds(bounds);}
@@ -221,3 +232,25 @@ var markerImage = new google.maps.MarkerImage(
   return markerImage;
 }
 
+function getImgs(setId) {
+  var URL = "https://api.flickr.com/services/rest/" +  // Wake up the Flickr API gods.
+    "?method=flickr.photosets.getPhotos" +  // Get photo from a photoset. http://www.flickr.com/services/api/flickr.photosets.getPhotos.htm
+    "&api_key=45a3e04b751f60243425d1d606f8fb1c" +  // API key. Get one here: http://www.flickr.com/services/apps/create/apply/
+    "&photoset_id=" + setId +  // The set ID.
+    "&privacy_filter=1" +  // 1 signifies all public photos.
+    "&per_page=20" + // For the sake of this example I am limiting it to 20 photos.
+    "&format=json&nojsoncallback=1";  // Er, nothing much to explain here.
+  imageURLs = [];
+  // See the API in action here: http://www.flickr.com/services/api/explore/flickr.photosets.getPhotos
+
+  $.getJSON(URL,function(data){
+    $.each(data.photoset.photo, function(i, item){
+      // Creating the image URL. Info: http://www.flickr.com/services/api/misc.urls.html
+      var img_src = "http://farm" + item.farm + ".static.flickr.com/" + item.server + "/" + item.id + "_" + item.secret + "_m.jpg";
+      var imageSRC = '<img src='+img_src+' margin="8px">'
+      //console.log(imageSRC);
+      //console.log(img_thumb);
+      imageURLs.push(imageSRC);
+    });  
+  });
+}
