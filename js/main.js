@@ -252,5 +252,9 @@ function getImgs(setId) {
       //console.log(img_thumb);
       imageURLs.push(imageSRC);
     });  
-  });
+  })
+  .fail(function() {
+    console.log( "error! error!" );
+  })
 }
+
